@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>LassoNet: Deep Lasso-Selection of 3D Point Clouds</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        cite {
+            font-style: normal;
+        }
+
+        body {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Verdana, Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        img,
+        video {
+            width: 100%;
+        }
+
+        .teaser {
+            position: relative;
+        }
+
+        .teaser img {
+            width: 100vw;
+        }
+
+        .teaser .mask {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #2c3e50;
+            opacity: 0.65;
+        }
+
+        .teaser .teaser-content {
+            position: absolute;
+            bottom: 30%;
+            /* left: 50%;
+            transform: translate(-50%, -50%); */
+            left: 10%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .teaser-content h1 {
+            color: #ecf0f1;
+            font-size: calc(0.5rem + 2.5vw);
+            margin-bottom: 0;
+            margin-top: 0;
+            letter-spacing: 0.25rem;
+            text-align: center;
+            width: 70%;
+            margin-bottom: 4rem;
+        }
+
+        .teaser .jump-btn-group {
+            display: flex;
+            justify-content: space-around;
+            border: 1px #fff solid;
+            border-radius: 4px;
+        }
+
+        .teaser .jump-btn:hover {
+            background-color: rgba(255, 255, 255, 0.075);
+        }
+
+        .teaser .jump-btn {
+            border-left: 0.5px #fff solid;
+            min-width: 6rem;
+            height: 2.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            cursor: pointer;
+            letter-spacing: 0.2rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        section {
+            margin: 32px auto;
+        }
+
+        section h2 {
+            text-align: center;
+        }
+
+        .abstract {
+            text-align: justify;
+        }
+
+        .gallary {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-content: space-between;
+            /* padding: 8px 8px 0px 8px; */
+        }
+
+        .paper .gallary:hover {
+            border: 1px solid #27ae60;
+        }
+        .paper .item-content:hover {
+            /* disable the hover*/
+            border: 1px solid #dddddd;
+        }
+
+        .item {
+            width: 24%;
+            position: relative;
+            margin-bottom: 8px;
+            background-color: #fff;
+        }
+
+        .item-content {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #dddddd;
+            border-radius: 10px;
+        }
+
+        .item-content:hover {
+            border: 1px solid #27ae60;
+            border-radius: 10px;
+        }
+
+        .item-content img {
+            /* max-height: 100%;
+            max-width: 100%;
+            height: auto;
+            width: auto; */
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .item-1 {
+            width: 96%;
+        }
+
+        .item-2 {
+            width: 48%;
+        }
+
+        .item-3 {
+            width: 32%;
+        }
+
+        .item-5 {
+            width: 19%;
+        }
+
+        #examples_good {
+            width: 120%;
+            margin-left: -10%;
+        }
+
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            margin: 16px auto;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        .training pre {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .training pre code {
+            width: 48%;
+            font-size: 0.8em;
+        }
+
+        .list_losses {
+            width: 90%;
+            margin: auto;
+        }
+
+        .card-content,
+        .list_losses p {
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            padding: 1.25rem;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0, 0, 0, .125);
+            border-radius: .25rem;
+        }
+
+        .card-content > :first-child {
+            margin-top: 0;
+        }
+        .card-content > :last-child {
+            margin-bottom: 0;
+        }
+
+        .card-title,
+        .list_losses>span {
+            display: block;
+            background: steelblue;
+            color: white;
+
+            padding: .5rem 1.25rem;
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
+            border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+        }
+
+        .legend {
+            font-size: 1.3rem;
+            position: absolute;
+            text-align: center;
+            line-height: 30px;
+            align-items: center;
+            /* margin: 8px; */
+            background: #010101;
+            color: #fff;
+            display: inline-block;
+            width: 30px;
+            /* height: 16px; */
+            border-radius: 50%;
+            /* border: 2px solid #f7f7f7; */
+            bottom: 0;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+    </style>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    <link rel="stylesheet" href="styles/tomorrow-night.css">
+    <script src="js/highlight.pack.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML' async></script>
+</head>
+
+<body>
+    <div class="teaser">
+        <img src="./figs/teaser.jpg" />
+        <div class="mask"></div>
+        <div class="teaser-content">
+            <h1>LassoNet: Deep Lasso-Selection of 3D Point Clouds</h1>
+            <div class="jump-btn-group">
+                <!-- <a href="#abstract" class="jump-btn">Abstract</a> -->
+                <!-- <a href="#labels" class="jump-btn">Labels</a>
+                <a href="#architecture" class="jump-btn">Architecture</a>
+                <a href="#training" class="jump-btn">Training</a>
+                <a href="#examples" class="jump-btn">Examples</a> -->
+                <a href="//chenzhutian.org/projects/2019_lassonet/paper.pdf" class="jump-btn" target="_blank">Paper</a>
+                <!-- <a href="#materials" class="jump-btn">Materials</a> -->
+            </div>
+        </div>
+    </div>
+    <div class="content" style="width:80vw;max-width: 1024px;">
+        <section id="abstract" class="abstract">
+            <h2>Abstract</h2>
+            Selection is a fundamental task in exploratory analysis and visualization of 3D point clouds. Prior researches on selection
+            methods were developed mainly based on heuristics such as local point density, thus limiting their applicability in general data. Specific
+            challenges root in the great variabilities implied by point clouds (<em>e.g.</em>, dense vs. sparse), viewpoint (<em>e.g.</em>, occluded vs. non-occluded),
+            and lasso (<em>e.g.</em>, small vs. large). In this work, we introduce LassoNet, a new deep neural network for lasso selection of 3D point clouds,
+            attempting to learn a latent mapping from viewpoint and lasso to point cloud regions. To achieve this, we couple user-target points
+            with viewpoint and lasso information through 3D coordinate transform and naive selection, and improve the method scalability via an
+            intention filtering and farthest point sampling. A hierarchical network is trained using a dataset with over 30K lasso-selection records on
+            two different point cloud data. We conduct a formal user study to compare LassoNet with two state-of-the-art lasso-selection methods.
+            The evaluations confirm that our approach improves the selection effectiveness and efficiency across different combinations of 3D point
+            clouds, viewpoints, and lasso selections.
+        </section>
+        <hr />
+
+        <section id="architecture" class="architecture">
+            <h2>Pipeline and Network Architecture</h2>
+
+            <figure style="text-align: center;
+            width: 100%;
+            margin: 0 auto 20px auto;">
+                <img src="figs/pipeline.jpg" alt="missing">
+                <figcaption>
+                    Figure 3. <strong>Pipeline</strong>. LassoNet consists of three stages: In <em>Interaction Encoding</em> stage, we associate point cloud with viewpoint and lasso through 3D coordinate transformation and naive selection; 
+                    In <em>Filtering and Sampling</em> stage, we reduce the amount of points for network processing through intention filtering
+                    and farthest point sampling. 
+                    Lastly, we build a hierarchical neural network in <em>Network Building</em> stage.
+                </figcaption>
+            </figure>
+
+            <figure style="text-align: center;
+            width: 100%;
+            margin: 0 auto 20px auto;">
+                <img src="figs/arch.jpg" alt="missing">
+                <figcaption>
+                    Figure 4. <strong>Overview of network building</strong>. The DNN network is built upon (a) PointNet <cite>ref_pn</cite>, 
+                    and we employ a hierarchical structure that generates more local and global features using 
+                    (b) abstraction and (c) propagation components.
+                </figcaption>
+            </figure>
+
+        </section>
+
+        <hr />
+        <section id="dataset" class="dataset">
+            <h2>Dataset</h2>
+
+            <figure style="text-align: center;
+            width: 100%;
+            margin: 0 auto 20px auto;">
+                <img src="figs/records.jpg" alt="missing">
+                <figcaption>
+                    Figure 5. <strong>Exemplar annotation records</strong> for point clouds in ShapeNet (left)
+                    and S3DIS (right): target and interfering points are colored in yellow and
+                    blue respectively, while lassos are in red color.
+                </figcaption>
+            </figure>
+
+            <table id="tb_dataset" style="width:50%;">
+                    <thead>
+                        <tr>
+                            <th style="width:157px;">Dataset</th>
+                            <th>#Point Clouds</th>
+                            <th>#Targets</th>
+                            <th>#Records</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ShapeNet</th>
+                            <td>2,332</td>
+                            <td>6,297</td>
+                            <td>19,432</td>
+                        </tr>
+                        <tr>
+                            <td>S3DIS</td>
+                            <td>2,72</td>
+                            <td>4,018</td>
+                            <td>12,944</td>
+                        </tr>
+                    </tbody>
+                    <caption>Statistics of lasso-selection records.</caption>
+                </table>
+
+                <p>
+                    The table  presents statistics of lasso-selection records. In total, we
+                    have collected 19,432 lasso-selection records for 6,297 different parts
+                    of target points in ShapeNet point clouds, and 12,944 records for 4,018
+                    different parts of target points in S3DIS point clouds.
+                </p>
+
+        </section>
+
+        <hr />
+        <section id="examples" class="examples">
+            <h2>Examples</h2>
+        </section>
+
+        <hr />
+        <section id="references" class="references">
+            <h2 style="text-align:left;">Reference</h2>
+            <p id="ref_pn">Charles R. Qi, Hao Su, Kaichun Mo, Leonidas J. Guibas. <a
+                    href="https://arxiv.org/abs/1612.00593">"PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation."</a> In Proc. IEEE CVPR. 2017.</p>
+        </section>
+    </div>
+
+    <script>
+        function insertExampleImage() {
+            const section = document.querySelector('#examples > #examples_good')
+            for (let i = 1; i < 13; ++i) {
+                section.insertAdjacentHTML('beforeend', `
+                <div class="item">
+                    <div class="item-content">
+                    <a data-fancybox="gallery" href="figs/examples/${i}_u.png">
+                    <img src="figs/examples/${i}_u_tn.jpg" alt='missing' /> </a>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="item-content">
+                        <a data-fancybox="gallery" href="figs/examples/${i}_d.png">
+                            <img src="figs/examples/${i}_d_tn.jpg" alt='missing' />
+                        </a>
+                    </div>
+                </div>
+                `)
+            }
+        }
+
+        function insertCategoryTable() {
+            const target = document.querySelector('#tb_categories > tbody')
+            const tableData = [
+                ['<img style="width:15px;" src="https://placehold.it/15/FFC000/000000?text=+" /> Event mark', 'A graphical mark that represents an event. The mark does not relate to the content of the event it represents.', 'BBox + Mask', '1 / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/34495E/000000?text=+" /> Event text', 'A block of text that depicts and only depicts the occurred time of an event.', 'BBox', '0 ~ 1 / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/5B9BD5/000000?text=+" /> Annotation mark', 'A graphical mark that annotates an event. The mark does not relate to the content of the event it annotates.', 'BBox + Mask', '0 ~ n / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/AF7AC4/000000?text=+" /> Annotation text', 'A block of text that depicts the content of an event. The occurred time of the event can be included.', 'BBox', '0 ~ n / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/FC6868/000000?text=+" /> Annotation icon', 'A graphical or natural image that annotates an event.', 'BBox', '0 ~ n / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/1ABC9C/000000?text=+" /> Main body', 'A graphical mark that represents the time.', 'BBox + Mask', '0 ~ n / image'],
+            ]
+            for (const line of tableData) {
+                target.insertAdjacentHTML('beforeend', `<tr>${line.map(d => `<td>${d}</th>`).join('')}</td>`)
+            }
+        }
+
+        function insertLossesTable() {
+            const target = document.querySelector('#tb_losses > tbody')
+            const data = [
+                [String.raw`\(\mathcal{L}_{{Image}_{type}}\)`, 'Image', 'Classification', 'Cross-Entropy', 0.15],
+                [String.raw`\(\mathcal{L}_{{Image}_{orientation}}\)`, 'Image', 'Classification', 'Cross-Entropy', 0.15],
+                [String.raw`\(\mathcal{L}_{{RoI}_{objectness}}\)`, 'RoI', 'Classification', 'Cross-Entropy', 1],
+                [String.raw`\(\mathcal{L}_{{RoI}_{bbox}}\)`, 'RoI', 'Regression', String.raw`Smooth \(L_1\)`, 1],
+                [String.raw`\(\mathcal{L}_{{DT}_{type}}\)`, 'DT', 'Classification', 'Cross-Entropy', 1],
+                [String.raw`\(\mathcal{L}_{{DT}_{bbox}}\)`, 'DT', 'Regression', String.raw`Smooth \(L_1\)`, 1],
+                [String.raw`\(\mathcal{L}_{{DT}_{mask}}\)`, 'DT', 'Classification', 'Cross-Entropy', 1]
+            ]
+            for (const line of data) {
+                target.insertAdjacentHTML('beforeend', `<tr>${line.map(d => `<td>${d}</th>`).join('')}</td>`)
+            }
+        }
+
+        function insertPaperPreview() {
+            const target = document.querySelector('#paper > .gallary')
+            for (let i = 1; i < 11; ++i) {
+                target.insertAdjacentHTML('beforeend', `<a href="https://chenzhutian.org/projects/2019_autotimeline/paper.pdf" class="item item-5">
+                    <div class="item-content"><img src="figs/paper/${i}_tn.jpg"/>
+                    </div>
+                    </a>`)
+            }
+        }
+
+        function convertReference() {
+            const cites = document.querySelectorAll('cite')
+            let id = 1
+            const orderBook = {}
+            cites.forEach(c => {
+                if (!(c.textContent in orderBook)) {
+                    orderBook[c.textContent] = id++
+                }
+            })
+            cites.forEach(c => {
+                const refId = c.textContent
+                c.textContent = ''
+                c.insertAdjacentHTML('beforeend', `<a href="#${refId}">[${orderBook[refId]}]</a>`)
+            })
+
+            // reorder
+            const ps = Array.from(document.querySelectorAll('#references > p'))
+            ps.forEach(p => {
+                p.innerHTML = `[${orderBook[p.id]}] ${p.innerHTML}`
+                p.parentElement.removeChild(p)
+            })
+            const parent = document.querySelector('#references')
+            ps.filter(p => orderBook[p.id])
+                .sort((a, b) => orderBook[a.id] - orderBook[b.id])
+                .forEach(p => parent.appendChild(p))
+        }
+
+        // // insert categorytable
+        // insertCategoryTable()
+
+        // // insert examples
+        // insertExampleImage()
+
+        // // insert losses
+        // insertLossesTable()
+
+        // insert paper
+        // insertPaperPreview()
+
+        // highlight code
+        // hljs.initHighlightingOnLoad()
+
+        // reference
+        convertReference()
+
+    </script>
+</body>
+
+</html>
