@@ -32,6 +32,10 @@ video {
 
 .teaser {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .teaser img {
@@ -53,7 +57,7 @@ video {
     bottom: 30%;
     /* left: 50%;
     transform: translate(-50%, -50%); */
-    left: 10%;
+    /* left: 10%; */
     display: flex;
     flex-direction: column;
     align-items: center;
