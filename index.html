@@ -163,68 +163,7 @@
     </div>
 
     <script>
-        function insertExampleImage() {
-            const section = document.querySelector('#examples > #examples_good')
-            for (let i = 1; i < 13; ++i) {
-                section.insertAdjacentHTML('beforeend', `
-                <div class="item">
-                    <div class="item-content">
-                    <a data-fancybox="gallery" href="figs/examples/${i}_u.png">
-                    <img src="figs/examples/${i}_u_tn.jpg" alt='missing' /> </a>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="item-content">
-                        <a data-fancybox="gallery" href="figs/examples/${i}_d.png">
-                            <img src="figs/examples/${i}_d_tn.jpg" alt='missing' />
-                        </a>
-                    </div>
-                </div>
-                `)
-            }
-        }
-
-        function insertCategoryTable() {
-            const target = document.querySelector('#tb_categories > tbody')
-            const tableData = [
-                ['<img style="width:15px;" src="https://placehold.it/15/FFC000/000000?text=+" /> Event mark', 'A graphical mark that represents an event. The mark does not relate to the content of the event it represents.', 'BBox + Mask', '1 / event'],
-                ['<img style="width:15px;" src="https://placehold.it/15/34495E/000000?text=+" /> Event text', 'A block of text that depicts and only depicts the occurred time of an event.', 'BBox', '0 ~ 1 / event'],
-                ['<img style="width:15px;" src="https://placehold.it/15/5B9BD5/000000?text=+" /> Annotation mark', 'A graphical mark that annotates an event. The mark does not relate to the content of the event it annotates.', 'BBox + Mask', '0 ~ n / event'],
-                ['<img style="width:15px;" src="https://placehold.it/15/AF7AC4/000000?text=+" /> Annotation text', 'A block of text that depicts the content of an event. The occurred time of the event can be included.', 'BBox', '0 ~ n / event'],
-                ['<img style="width:15px;" src="https://placehold.it/15/FC6868/000000?text=+" /> Annotation icon', 'A graphical or natural image that annotates an event.', 'BBox', '0 ~ n / event'],
-                ['<img style="width:15px;" src="https://placehold.it/15/1ABC9C/000000?text=+" /> Main body', 'A graphical mark that represents the time.', 'BBox + Mask', '0 ~ n / image'],
-            ]
-            for (const line of tableData) {
-                target.insertAdjacentHTML('beforeend', `<tr>${line.map(d => `<td>${d}</th>`).join('')}</td>`)
-            }
-        }
-
-        function insertLossesTable() {
-            const target = document.querySelector('#tb_losses > tbody')
-            const data = [
-                [String.raw`\(\mathcal{L}_{{Image}_{type}}\)`, 'Image', 'Classification', 'Cross-Entropy', 0.15],
-                [String.raw`\(\mathcal{L}_{{Image}_{orientation}}\)`, 'Image', 'Classification', 'Cross-Entropy', 0.15],
-                [String.raw`\(\mathcal{L}_{{RoI}_{objectness}}\)`, 'RoI', 'Classification', 'Cross-Entropy', 1],
-                [String.raw`\(\mathcal{L}_{{RoI}_{bbox}}\)`, 'RoI', 'Regression', String.raw`Smooth \(L_1\)`, 1],
-                [String.raw`\(\mathcal{L}_{{DT}_{type}}\)`, 'DT', 'Classification', 'Cross-Entropy', 1],
-                [String.raw`\(\mathcal{L}_{{DT}_{bbox}}\)`, 'DT', 'Regression', String.raw`Smooth \(L_1\)`, 1],
-                [String.raw`\(\mathcal{L}_{{DT}_{mask}}\)`, 'DT', 'Classification', 'Cross-Entropy', 1]
-            ]
-            for (const line of data) {
-                target.insertAdjacentHTML('beforeend', `<tr>${line.map(d => `<td>${d}</th>`).join('')}</td>`)
-            }
-        }
-
-        function insertPaperPreview() {
-            const target = document.querySelector('#paper > .gallary')
-            for (let i = 1; i < 11; ++i) {
-                target.insertAdjacentHTML('beforeend', `<a href="https://chenzhutian.org/projects/2019_autotimeline/paper.pdf" class="item item-5">
-                    <div class="item-content"><img src="figs/paper/${i}_tn.jpg"/>
-                    </div>
-                    </a>`)
-            }
-        }
-
+      
         function convertReference() {
             const cites = document.querySelectorAll('cite')
             let id = 1
@@ -251,21 +190,6 @@
                 .sort((a, b) => orderBook[a.id] - orderBook[b.id])
                 .forEach(p => parent.appendChild(p))
         }
-
-        // // insert categorytable
-        // insertCategoryTable()
-
-        // // insert examples
-        // insertExampleImage()
-
-        // // insert losses
-        // insertLossesTable()
-
-        // insert paper
-        // insertPaperPreview()
-
-        // highlight code
-        // hljs.initHighlightingOnLoad()
 
         // reference
         convertReference()
